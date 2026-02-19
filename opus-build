@@ -10,6 +10,8 @@ LOG_PATH="${OPUS_BUILD_OUT_PATH}/logs"
 LIB_BUILD_PATH="$OPUS_PATH/obj/local"
 LIB_HEADERS_PATH="$OPUS_PATH/include"
 
+OPUS_UTILS_PATH="${UTILS_PATH}/opus"
+
 rm -rf "${OPUS_BUILD_OUT_PATH}"
 mkdir -p "${LIB_PATH}"
 mkdir -p "${LOG_PATH}"
@@ -18,9 +20,9 @@ mkdir -p "${LOG_PATH}"
 cd $OPUS_PATH
 
 # Download Android.mk
-echo "Downloading Android.mk file from PjSip website ..."
+echo "Using stored Android.mk file from utils dir ..."
 mkdir -p jni
-(cd jni && curl -O https://trac.pjsip.org/repos/raw-attachment/ticket/1904/Android.mk)
+(cd jni && cp $OPUS_UTILS_PATH/Android.mk .)
 
 # Build Opus
 echo "Building Opus $OPUS_VERSION ..."
