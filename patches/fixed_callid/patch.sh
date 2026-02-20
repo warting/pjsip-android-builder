@@ -8,7 +8,8 @@ cp callid.patch $PJPROJECT_BASE_FOLDER
 
 CURDIR=$(pwd)
 cd "$PJPROJECT_BASE_FOLDER"
-patch -p0 < callid.patch
+git apply --check callid.patch || exit 1
+git apply --verbose callid.patch
 rm callid.patch
 
 cd "$CURDIR"

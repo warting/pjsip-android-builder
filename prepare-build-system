@@ -113,12 +113,10 @@ then
     echo "Downloading PJSIP ${PJSIP_VERSION} ..."
     echo ""
     cd $DOWNLOAD_DIR
-    pjsipFile="pjsip.tar.gz"
-    curl -L -# -o $pjsipFile "$PJSIP_DOWNLOAD_URL" 2>&1
     rm -rf "$PJSIP_DIR_NAME"
-    echo "PJSIP downloaded!"
-    echo "Extracting PJSIP ..."
-    tar xzf $pjsipFile && rm -rf $pjsipFile
+    mkdir -p "$PJSIP_DIR_NAME"
+    git clone -b $PJSIP_VERSION $PJSIP_REPO_URL $PJSIP_DIR_NAME
+    echo "PJSIP repo cloned!"
 
     PATCH_DIR=$BASEDIR/patches
 

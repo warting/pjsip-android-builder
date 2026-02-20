@@ -1,9 +1,9 @@
-diff --git pjsip/include/pjsua2/media.hpp pjsip/include/pjsua2/media.hpp
-index 5c4321082..85bf0c8f6 100644
---- pjsip/include/pjsua2/media.hpp
-+++ pjsip/include/pjsua2/media.hpp
-@@ -2559,6 +2559,15 @@ struct AudDevErrorEvent
-     pj_status_t		    status;	/**< The status code.	    */
+diff --git a/pjsip/include/pjsua2/media.hpp b/pjsip/include/pjsua2/media.hpp
+index b6749d1aa..e1cb5eef9 100644
+--- a/pjsip/include/pjsua2/media.hpp
++++ b/pjsip/include/pjsua2/media.hpp
+@@ -2925,6 +2925,15 @@ struct AudDevErrorEvent
+     pj_status_t             status;     /**< The status code.       */
  };
  
 +/**
@@ -18,10 +18,10 @@ index 5c4321082..85bf0c8f6 100644
  /**
   * Media event data.
   */
-@@ -2572,6 +2581,11 @@ typedef union MediaEventData {
+@@ -2938,6 +2947,11 @@ typedef union MediaEventData {
       * Audio device error event data.
       */
-     AudDevErrorEvent	    audDevError;
+     AudDevErrorEvent        audDevError;
 +
 +    /**
 +     * Rtcp FB event data.
@@ -30,14 +30,14 @@ index 5c4321082..85bf0c8f6 100644
      
      /**
       * Pointer to storage to user event data, if it's outside
-diff --git pjsip/src/pjsua2/media.cpp pjsip/src/pjsua2/media.cpp
-index de9819fda..158bdc945 100644
---- pjsip/src/pjsua2/media.cpp
-+++ pjsip/src/pjsua2/media.cpp
-@@ -1931,6 +1931,9 @@ void MediaEvent::fromPj(const pjmedia_event &ev)
- 	data.audDevError.dir = ev.data.aud_dev_err.dir;
- 	data.audDevError.id = ev.data.aud_dev_err.id;
- 	data.audDevError.status = ev.data.aud_dev_err.status;
+diff --git a/pjsip/src/pjsua2/media.cpp b/pjsip/src/pjsua2/media.cpp
+index 0710ed267..3987c1a73 100644
+--- a/pjsip/src/pjsua2/media.cpp
++++ b/pjsip/src/pjsua2/media.cpp
+@@ -2355,6 +2355,9 @@ void MediaEvent::fromPj(const pjmedia_event &ev)
+         data.audDevError.dir = ev.data.aud_dev_err.dir;
+         data.audDevError.id = ev.data.aud_dev_err.id;
+         data.audDevError.status = ev.data.aud_dev_err.status;
 +    } else if (type == PJMEDIA_EVENT_RX_RTCP_FB) {
 +        data.rtcpFb.fbType = ev.data.rx_rtcp_fb.cap.type;
 +        data.rtcpFb.isParamLengthZero = ev.data.rx_rtcp_fb.cap.param.slen == 0;

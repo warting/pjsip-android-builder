@@ -1,24 +1,24 @@
-diff --git pjsip/include/pjsip-ua/sip_regc.h pjsip/include/pjsip-ua/sip_regc.h
-index b094afeb7..67a69a73d 100644
---- pjsip/include/pjsip-ua/sip_regc.h
-+++ pjsip/include/pjsip-ua/sip_regc.h
-@@ -225,7 +225,8 @@ PJ_DECL(pj_status_t) pjsip_regc_init(pjsip_regc *regc,
- 				     const pj_str_t *to_url,
- 				     int ccnt,
- 				     const pj_str_t contact[],
--				     pj_uint32_t expires);
-+				     pj_uint32_t expires,
-+                     const pj_str_t *cid);
+diff --git a/pjsip/include/pjsip-ua/sip_regc.h b/pjsip/include/pjsip-ua/sip_regc.h
+index fc8afbe8c..733e6de1e 100644
+--- a/pjsip/include/pjsip-ua/sip_regc.h
++++ b/pjsip/include/pjsip-ua/sip_regc.h
+@@ -222,7 +222,8 @@ PJ_DECL(pj_status_t) pjsip_regc_init(pjsip_regc *regc,
+                                      const pj_str_t *to_url,
+                                      int ccnt,
+                                      const pj_str_t contact[],
+-                                     pj_uint32_t expires);
++                                     pj_uint32_t expires,
++				const pj_str_t *cid);
  
  
  /**
-diff --git pjsip/include/pjsua-lib/pjsua.h pjsip/include/pjsua-lib/pjsua.h
-index e5d9b494b..f3df90031 100644
---- pjsip/include/pjsua-lib/pjsua.h
-+++ pjsip/include/pjsua-lib/pjsua.h
-@@ -3672,6 +3672,14 @@ typedef struct pjsua_acc_config
+diff --git a/pjsip/include/pjsua-lib/pjsua.h b/pjsip/include/pjsua-lib/pjsua.h
+index 767ab9eff..710f3faac 100644
+--- a/pjsip/include/pjsua-lib/pjsua.h
++++ b/pjsip/include/pjsua-lib/pjsua.h
+@@ -4075,6 +4075,14 @@ typedef struct pjsua_acc_config
       */
-     pj_str_t	    id;
+     pj_str_t        id;
  
 +    /**
 +     * The Call ID used in REGISTER. If the value is empty, a random generated
@@ -28,16 +28,16 @@ index e5d9b494b..f3df90031 100644
 +     */
 +    pj_str_t	    call_id;
 +
-     /**
+     /** 
       * This is the URL to be put in the request URI for the registration,
       * and will look something like "sip:serviceprovider".
-diff --git pjsip/include/pjsua2/account.hpp pjsip/include/pjsua2/account.hpp
-index 76e7e179b..4454fce2c 100644
---- pjsip/include/pjsua2/account.hpp
-+++ pjsip/include/pjsua2/account.hpp
-@@ -179,6 +179,14 @@ struct AccountRegConfig : public PersistentObject
+diff --git a/pjsip/include/pjsua2/account.hpp b/pjsip/include/pjsua2/account.hpp
+index 6bd541707..f76aa79e9 100644
+--- a/pjsip/include/pjsua2/account.hpp
++++ b/pjsip/include/pjsua2/account.hpp
+@@ -190,6 +190,14 @@ struct AccountRegConfig : public PersistentObject
       */
-     unsigned		proxyUse;
+     unsigned            proxyUse;
  
 +    /**
 +     * This value will be used to set the registration Call-ID
@@ -50,115 +50,115 @@ index 76e7e179b..4454fce2c 100644
  public:
      /**
       * Read this object from a container node.
-diff --git pjsip/src/pjsip-ua/sip_reg.c pjsip/src/pjsip-ua/sip_reg.c
-index a5132adf9..485a65728 100644
---- pjsip/src/pjsip-ua/sip_reg.c
-+++ pjsip/src/pjsip-ua/sip_reg.c
-@@ -343,7 +343,8 @@ PJ_DEF(pj_status_t) pjsip_regc_init( pjsip_regc *regc,
- 				     const pj_str_t *to_url,
- 				     int contact_cnt,
- 				     const pj_str_t contact[],
--				     pj_uint32_t expires)
-+				     pj_uint32_t expires,
-+                     const pj_str_t *cid)
+diff --git a/pjsip/src/pjsip-ua/sip_reg.c b/pjsip/src/pjsip-ua/sip_reg.c
+index 18209b925..610c57700 100644
+--- a/pjsip/src/pjsip-ua/sip_reg.c
++++ b/pjsip/src/pjsip-ua/sip_reg.c
+@@ -352,7 +352,8 @@ PJ_DEF(pj_status_t) pjsip_regc_init( pjsip_regc *regc,
+                                      const pj_str_t *to_url,
+                                      int contact_cnt,
+                                      const pj_str_t contact[],
+-                                     pj_uint32_t expires)
++                                     pj_uint32_t expires,
++				const pj_str_t *cid)
  {
      pj_str_t tmp;
      pj_status_t status;
-@@ -395,7 +396,12 @@ PJ_DEF(pj_status_t) pjsip_regc_init( pjsip_regc *regc,
+@@ -405,7 +406,12 @@ PJ_DEF(pj_status_t) pjsip_regc_init( pjsip_regc *regc,
  
      /* Set "Call-ID" header. */
      regc->cid_hdr = pjsip_cid_hdr_create(regc->pool);
 -    pj_create_unique_string(regc->pool, &regc->cid_hdr->id);
 +    if (cid->slen > 0){
 +        pj_strdup_with_null(regc->pool, &regc->cid_hdr->id, cid);
-+	    PJ_LOG(4,(THIS_FILE, "regc: callID %.*s", regc->cid_hdr->id.slen, regc->cid_hdr->id.ptr));
++	PJ_LOG(4,(THIS_FILE, "regc: callID %.*s", regc->cid_hdr->id.slen, regc->cid_hdr->id.ptr));
 +    } else {
 +        pj_create_unique_string(regc->pool, &regc->cid_hdr->id);
 +    }
  
      /* Set "CSeq" header. */
      regc->cseq_hdr = pjsip_cseq_hdr_create(regc->pool);
-diff --git pjsip/src/pjsua-lib/pjsua_acc.c pjsip/src/pjsua-lib/pjsua_acc.c
-index af1d79ddf..6ea77c1b6 100644
---- pjsip/src/pjsua-lib/pjsua_acc.c
-+++ pjsip/src/pjsua-lib/pjsua_acc.c
-@@ -96,6 +96,7 @@ PJ_DEF(void) pjsua_acc_config_dup( pj_pool_t *pool,
+diff --git a/pjsip/src/pjsua-lib/pjsua_acc.c b/pjsip/src/pjsua-lib/pjsua_acc.c
+index 526cb392d..8527e7028 100644
+--- a/pjsip/src/pjsua-lib/pjsua_acc.c
++++ b/pjsip/src/pjsua-lib/pjsua_acc.c
+@@ -95,6 +95,7 @@ PJ_DEF(void) pjsua_acc_config_dup( pj_pool_t *pool,
      pj_strdup_with_null(pool, &dst->contact_uri_params,
                          &src->contact_uri_params);
      pj_strdup_with_null(pool, &dst->pidf_tuple_id, &src->pidf_tuple_id);
-+	pj_strdup_with_null(pool, &dst->call_id, &src->call_id);
++    pj_strdup_with_null(pool, &dst->call_id, &src->call_id);
      pj_strdup_with_null(pool, &dst->rfc5626_instance_id,
                          &src->rfc5626_instance_id);
      pj_strdup_with_null(pool, &dst->rfc5626_reg_id, &src->rfc5626_reg_id);
-@@ -2655,7 +2656,8 @@ static pj_status_t pjsua_regc_init(int acc_id)
- 			      &acc->cfg.id, 
- 			      &acc->cfg.id,
- 			      1, &acc->reg_contact,
--			      acc->cfg.reg_timeout);
-+			      acc->cfg.reg_timeout,
-+				  &acc->cfg.call_id);
+@@ -2754,7 +2755,8 @@ static pj_status_t pjsua_regc_init(int acc_id)
+                               &acc->cfg.id, 
+                               &acc->cfg.id,
+                               1, &acc->reg_contact,
+-                              acc->cfg.reg_timeout);
++                              acc->cfg.reg_timeout,
++                              &acc->cfg.call_id);
      if (status != PJ_SUCCESS) {
- 	pjsua_perror(THIS_FILE, 
- 		     "Client registration initialization error", 
-diff --git pjsip/src/pjsua-lib/pjsua_core.c pjsip/src/pjsua-lib/pjsua_core.c
-index c437011b5..ac0e616be 100644
---- pjsip/src/pjsua-lib/pjsua_core.c
-+++ pjsip/src/pjsua-lib/pjsua_core.c
-@@ -324,6 +324,8 @@ PJ_DEF(void) pjsua_acc_config_default(pjsua_acc_config *cfg)
+         pjsua_perror(THIS_FILE, 
+                      "Client registration initialization error", 
+diff --git a/pjsip/src/pjsua-lib/pjsua_core.c b/pjsip/src/pjsua-lib/pjsua_core.c
+index 33caf547f..a880dcbcf 100644
+--- a/pjsip/src/pjsua-lib/pjsua_core.c
++++ b/pjsip/src/pjsua-lib/pjsua_core.c
+@@ -335,6 +335,8 @@ PJ_DEF(void) pjsua_acc_config_default(pjsua_acc_config *cfg)
  
      pj_bzero(cfg, sizeof(*cfg));
  
-+	cfg->call_id = pj_str("");
++    cfg->call_id = pj_str("");
 +
      cfg->reg_timeout = PJSUA_REG_INTERVAL;
      cfg->reg_delay_before_refresh = PJSIP_REGISTER_CLIENT_DELAY_BEFORE_REFRESH;
      cfg->unreg_timeout = PJSUA_UNREG_TIMEOUT;
-diff --git pjsip/src/pjsua2/account.cpp pjsip/src/pjsua2/account.cpp
-index e7a6d4eaa..15367d1a8 100644
---- pjsip/src/pjsua2/account.cpp
-+++ pjsip/src/pjsua2/account.cpp
-@@ -237,6 +237,7 @@ void AccountRegConfig::readObject(const ContainerNode &node)
-     NODE_READ_UNSIGNED	(this_node, unregWaitMsec);
-     NODE_READ_UNSIGNED	(this_node, proxyUse);
-     NODE_READ_STRING	(this_node, contactParams);
+diff --git a/pjsip/src/pjsua2/account.cpp b/pjsip/src/pjsua2/account.cpp
+index c119c4d61..055191c9f 100644
+--- a/pjsip/src/pjsua2/account.cpp
++++ b/pjsip/src/pjsua2/account.cpp
+@@ -313,6 +313,7 @@ void AccountRegConfig::readObject(const ContainerNode &node)
+     NODE_READ_UNSIGNED  (this_node, unregWaitMsec);
+     NODE_READ_UNSIGNED  (this_node, proxyUse);
+     NODE_READ_STRING    (this_node, contactParams);
 +    NODE_READ_STRING	(this_node, callID);
  
      readSipHeaders(this_node, "headers", headers);
  }
-@@ -257,6 +258,7 @@ void AccountRegConfig::writeObject(ContainerNode &node) const
-     NODE_WRITE_UNSIGNED	(this_node, unregWaitMsec);
-     NODE_WRITE_UNSIGNED	(this_node, proxyUse);
-     NODE_WRITE_STRING	(this_node, contactParams);
+@@ -333,6 +334,7 @@ void AccountRegConfig::writeObject(ContainerNode &node) const
+     NODE_WRITE_UNSIGNED (this_node, unregWaitMsec);
+     NODE_WRITE_UNSIGNED (this_node, proxyUse);
+     NODE_WRITE_STRING   (this_node, contactParams);
 +    NODE_WRITE_STRING	(this_node, callID);
  
      writeSipHeaders(this_node, "headers", headers);
  }
-@@ -578,6 +580,7 @@ void AccountConfig::toPj(pjsua_acc_config &ret) const
-     ret.drop_calls_on_reg_fail	= regConfig.dropCallsOnFail;
-     ret.unreg_timeout		= regConfig.unregWaitMsec;
-     ret.reg_use_proxy		= regConfig.proxyUse;
-+    ret.call_id	    = str2Pj(regConfig.callID);
-     ret.reg_contact_params	= str2Pj(regConfig.contactParams);
-     ret.reg_contact_uri_params	= str2Pj(regConfig.contactUriParams);
+@@ -688,6 +690,7 @@ void AccountConfig::toPj(pjsua_acc_config &ret) const
+     ret.drop_calls_on_reg_fail  = regConfig.dropCallsOnFail;
+     ret.unreg_timeout           = regConfig.unregWaitMsec;
+     ret.reg_use_proxy           = regConfig.proxyUse;
++    ret.call_id                 = str2Pj(regConfig.callID);
+     ret.reg_contact_params      = str2Pj(regConfig.contactParams);
+     ret.reg_contact_uri_params  = str2Pj(regConfig.contactUriParams);
      for (i=0; i<regConfig.headers.size(); ++i) {
-@@ -731,6 +734,7 @@ void AccountConfig::fromPj(const pjsua_acc_config &prm,
-     regConfig.dropCallsOnFail	= PJ2BOOL(prm.drop_calls_on_reg_fail);
-     regConfig.unregWaitMsec	= prm.unreg_timeout;
-     regConfig.proxyUse		= prm.reg_use_proxy;
-+    regConfig.callID	    = pj2Str(prm.call_id);
-     regConfig.contactParams	= pj2Str(prm.reg_contact_params);
-     regConfig.contactUriParams	= pj2Str(prm.reg_contact_uri_params);
+@@ -874,6 +877,7 @@ void AccountConfig::fromPj(const pjsua_acc_config &prm,
+     regConfig.dropCallsOnFail   = PJ2BOOL(prm.drop_calls_on_reg_fail);
+     regConfig.unregWaitMsec     = prm.unreg_timeout;
+     regConfig.proxyUse          = prm.reg_use_proxy;
++    regConfig.callID            = pj2Str(prm.call_id);
+     regConfig.contactParams     = pj2Str(prm.reg_contact_params);
+     regConfig.contactUriParams  = pj2Str(prm.reg_contact_uri_params);
      regConfig.headers.clear();
-diff --git pjsip/src/test/regc_test.c pjsip/src/test/regc_test.c
-index 59da650cf..6bb27c522 100644
---- pjsip/src/test/regc_test.c
-+++ pjsip/src/test/regc_test.c
-@@ -294,7 +294,7 @@ static int do_test(const char *title,
- 	return -100;
+diff --git a/pjsip/src/test/regc_test.c b/pjsip/src/test/regc_test.c
+index 5f978f8ac..bd5b35822 100644
+--- a/pjsip/src/test/regc_test.c
++++ b/pjsip/src/test/regc_test.c
+@@ -299,7 +299,7 @@ static int do_test(const char *title,
+         return -100;
  
      status = pjsip_regc_init(regc, registrar_uri, &aor, &aor, contact_cnt,
--			     contacts, expires ? expires : 60);
-+			     contacts, expires ? expires : 60, "highComplexityCall-Id123456");
+-                             contacts, expires ? expires : 60);
++                             contacts, expires ? expires : 60, pj_str("highComplexityCall-Id123456"));
      if (status != PJ_SUCCESS) {
- 	pjsip_regc_destroy(regc);
- 	return -110;
+         pjsip_regc_destroy(regc);
+         return -110;
