@@ -1,5 +1,23 @@
 # Change Log
 
+## Version 3.0.0 (2026-02-20)
+
+What's new in this release
+
+* NDK bumped to LTS `r27d`
+* PJSIP bumped to `2.16`
+* SWIG bumped to `4.4.1`
+* OpenSSL bumped to current LTS `3.5.5`
+* OpenH264 bumped to `2.6.0`
+* Opus bumped to `1.6.1`
+* Android build tools bumped to `33.0.2`
+* Target SDK bumped to `34`
+
+* **Issues fixed**:
+  * #55
+  * #58
+  * #60 (except for the introduction of the Oboe Audio backend)
+
 ## Version 2.7.0 (2023-11-28)
 
 * Add patch to fix update_contact_header when need_outbound is false and only reg_contact_uri_params is not empty
