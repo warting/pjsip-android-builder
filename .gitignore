@@ -9,3 +9,6 @@ output/
 
 # OSX
 .DS_Store
+
+# local config overrides
+config.local.conf
