@@ -13,7 +13,7 @@ Using Android API `24`.
 Default versions included:
 
 - Android Cmd Tools: `14742923`
-- Android NKD: `r21e`
+- Android NKD: `r27d`
 - OpenSSL: `3.5.5`
 - OpenH264: `2.6.0`
 - Opus: `1.6.1`
