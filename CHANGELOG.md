@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 3.0.1 (2026-02-25)
+
+* **Issues fixed**:
+  * #61
+
 ## Version 3.0.0 (2026-02-20)
 
 What's new in this release
