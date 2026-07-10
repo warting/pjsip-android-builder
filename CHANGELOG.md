@@ -1,5 +1,12 @@
 # Change Log
 
+## Version 3.1.0 (2026-07-07)
+
+* Add patch to add `pjsua_call_xfer_replaces_contact()` and the pjsua2
+  `Call::xferReplacesContact()` binding: an attended transfer that targets the
+  destination's remote Contact URI (falling back to its AOR)
+* Add `XFER_REPLACES_CONTACT` switch to enable/disable the patch
+
 ## Version 3.0.1 (2026-02-25)
 
 * **Issues fixed**:
