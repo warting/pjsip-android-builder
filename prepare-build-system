@@ -161,6 +161,20 @@ then
         ./patch.sh
         cd $BASEDIR
     fi
+
+    # Xfer Replaces using remote Contact URI PATCH
+    if [ "${XFER_REPLACES_CONTACT}" == "1" ]
+        then
+        echo ""
+        echo ""
+        echo "######################################################################"
+        echo "Apply patch to add xfer_replaces_contact + pjsua2 binding ..."
+        echo "######################################################################"
+        echo ""
+        cd $PATCH_DIR/xfer_replaces_contact
+        ./patch.sh
+        cd $BASEDIR
+    fi
 fi
 
 if [ "$DOWNLOAD_SWIG" == "1" ]
